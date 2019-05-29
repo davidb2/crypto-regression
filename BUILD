@@ -10,12 +10,15 @@ cc_binary(
 )
 
 cc_binary(
-    name = "kmp",
+    name = "echo",
     srcs = [
-        "src/main.cc",
+        "echo_client.cpp",
     ],
     deps = [
         "@com_github_gflags_gflags//:gflags",
-        "@boost//:algorithm",
+        "@websocketpp//:websocketpp",
+    ],
+    linkopts = [
+        "-lboost_system",
     ],
 )

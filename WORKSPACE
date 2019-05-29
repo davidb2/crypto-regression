@@ -13,9 +13,9 @@ WEBSOCKETPP_BUILD = """
 cc_library(
     name = "websocketpp",
     hdrs = glob(
-        include = ["websocketpp/**/*.h", "websocketpp/catch2/**/*.hpp"],
+        include = ["websocketpp/**/*.h", "websocketpp/**/*.hpp"],
     ),
-    # strip_include_prefix = "single_include",
+    include_prefix = "",
     visibility = ["//visibility:public"],
 )
 """
