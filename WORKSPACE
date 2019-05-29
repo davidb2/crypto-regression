@@ -9,6 +9,17 @@ cc_library(
 )
 """
 
+JSON_BUILD = """
+cc_library(
+    name = "json",
+    hdrs = glob(
+        include = ["single_include/nlohmann/**/*.h", "single_include/nlohmann/**/*.hpp"],
+    ),
+    strip_include_prefix = "single_include",
+    visibility = ["//visibility:public"],
+)
+"""
+
 WEBSOCKETPP_BUILD = """
 cc_library(
     name = "websocketpp",
@@ -32,6 +43,13 @@ new_git_repository(
     remote = "https://github.com/zaphoyd/websocketpp.git",
     tag = "0.8.1",
     build_file_content = WEBSOCKETPP_BUILD,
+)
+
+new_git_repository(
+    name = "json",
+    remote = "https://github.com/nlohmann/json.git",
+    tag = "v3.6.1",
+    build_file_content = JSON_BUILD,
 )
 
 git_repository(

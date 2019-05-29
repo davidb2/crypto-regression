@@ -17,6 +17,7 @@ cc_binary(
     deps = [
         "@com_github_gflags_gflags//:gflags",
         "@websocketpp//:websocketpp",
+        "@json//:json",
     ],
     linkopts = [
         "-lboost_system",
