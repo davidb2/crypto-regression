@@ -1,15 +1,14 @@
 #include <string>
 
 #include <websocketpp/client.hpp>
-#include <websocketpp/config/asio_no_tls_client.hpp>
+#include <websocketpp/config/asio_client.hpp>
 
 #include "server.h"
 
 namespace gdax {
 
-typedef websocketpp::client<websocketpp::config::asio_client> WebsocketClient;
-typedef websocketpp::connection_hdl WebsocketHandle;
-typedef websocketpp::config::asio_client::message_type::ptr WebsocketMessagePtr;
+typedef websocketpp::client<websocketpp::config::asio_tls_client> WebsocketClient;
+typedef websocketpp::config::asio_tls_client::message_type::ptr WebsocketMessagePtr;
 
 // Gdax Client.
 class Client {
@@ -23,8 +22,12 @@ class Client {
   void onClose(WebsocketHandle handle);
   void onMessage(WebsocketHandle handle, WebsocketMessagePtr message);
 
+  // Source: https://github.com/zaphoyd/websocketpp/blob/master/examples/debug_client/debug_client.cpp#L95
+  WebsocketContextPtr onTlsInit(WebsocketHandle hdl);
+
  private:
   WebsocketClient c_;
+  Server* s_;
 };
 
 } // namespace gdax

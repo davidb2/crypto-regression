@@ -1,18 +1,28 @@
 #include <functional>
 #include <string>
 
+#include <nlohmann/json.hpp>
+
 #include "client.h"
 #include "types.h"
 
+using json = nlohmann::json;
 using std::bind;
 using std::placeholders::_1;
 using std::placeholders::_2;
 
 namespace gdax {
 
-
 void Client::onOpen(WebsocketHandle hdl) {
-  std::string msg = "Hello";
+  const json subscribeMsg = {
+    { "type", "subscribe" },
+    { "channels", json::array({ {
+        { "name", "ticker" },
+        { "product_ids", json::array({ "BTC-USD" }) },
+      } }),
+    },
+  };
+  const std::string msg = subscribeMsg.dump(2);
   c_.send(hdl, msg, websocketpp::frame::opcode::text);
   c_.get_alog().write(websocketpp::log::alevel::app, "Sent Message: " + msg);
 }
@@ -27,7 +37,7 @@ void Client::onMessage(WebsocketHandle hdl, WebsocketMessagePtr msg) {
     "Received Reply: " + msg->get_payload());
 
   WebsocketErrorCode ec;
-  c_.send(hdl, "hi" + msg->get_payload(), msg->get_opcode(), ec);
+  // c_.send(hdl, "hi" + msg->get_payload(), msg->get_opcode(), ec);
 
   if (ec) {
     c_.get_alog().write(
@@ -55,6 +65,24 @@ Client::Client(const Server* server) {
   c_.set_fail_handler(bind(&Client::onFail, this, ::_1));
   c_.set_message_handler(bind(&Client::onMessage, this, ::_1, ::_2));
   c_.set_close_handler(bind(&Client::onClose, this, ::_1));
+  c_.set_tls_init_handler(bind(&Client::onTlsInit, this, ::_1));
+}
+
+WebsocketContextPtr Client::onTlsInit(WebsocketHandle hdl) {
+  WebsocketContextPtr ctx =
+    websocketpp::lib::make_shared<WebsocketContext>(WebsocketContext::tlsv1);
+
+  try {
+    ctx->set_options(
+      WebsocketContext::default_workarounds
+      | WebsocketContext::no_sslv2
+      | WebsocketContext::no_sslv3
+      | WebsocketContext::single_dh_use
+    );
+  } catch (std::exception& e) {
+    std::cout << e.what() << std::endl;
+  }
+  return ctx;
 }
 
 bool Client::start(const std::string& uri, WebsocketErrorCode* eOut) noexcept {
