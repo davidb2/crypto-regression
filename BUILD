@@ -23,3 +23,24 @@ cc_binary(
         "-lboost_system",
     ],
 )
+
+cc_library(
+    name = "gdax",
+    hdrs = [
+        "backend/client.h",
+        "backend/server.h",
+        "backend/types.h",
+    ],
+    srcs = [
+        "backend/server.cc",
+        "backend/client.cc",
+    ],
+    deps = [
+        "@com_github_gflags_gflags//:gflags",
+        "@websocketpp//:websocketpp",
+        "@json//:json",
+    ],
+    linkopts = [
+        "-lboost_system",
+    ],
+)
