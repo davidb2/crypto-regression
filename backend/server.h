@@ -1,3 +1,6 @@
+#include <string>
+#include <vector>
+
 #include <websocketpp/server.hpp>
 #include <websocketpp/config/asio_no_tls.hpp>
 
@@ -12,17 +15,18 @@ typedef WebsocketServer::message_ptr WebsocketMessagePtr;
 // Dashboard Server.
 class Server {
  public:
-  Server(const std::string& uri);
-  void onOpen(WebsocketServer* server, WebsocketHandle handle);
-  void onFail(WebsocketServer* server);
-  void onClose(WebsocketServer* server, WebsocketHandle handle);
-  void onMessage(
-    WebsocketServer* server,
-    WebsocketHandle handle,
-    WebsocketMessagePtr message
-  );
+  Server();
+  bool start(const unsigned port, WebsocketErrorCode* ec) noexcept;
 
  private:
+  void onOpen(WebsocketHandle handle);
+  void onFail(WebsocketHandle handle);
+  void onClose(WebsocketHandle handle);
+  void onMessage(WebsocketHandle handle, WebsocketMessagePtr message);
+
+ private:
+  WebsocketServer s_;
+  std::vector<WebsocketHandle> subscribers_;
 };
 
 } // namespace gdax
