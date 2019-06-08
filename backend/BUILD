@@ -13,12 +13,14 @@ cc_library(
     name = "gdax",
     hdrs = [
         "client.h",
+        "manager.h",
         "server.h",
         "types.h",
     ],
     srcs = [
-        "server.cc",
         "client.cc",
+        "manager.cc",
+        "server.cc",
     ],
     deps = [
         "@websocketpp//:websocketpp",
