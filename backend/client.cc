@@ -52,13 +52,13 @@ void Client::onClose(WebsocketHandle hdl) {
   c_.get_alog().write(websocketpp::log::alevel::app, "Connection Closed");
 }
 
-Client::Client(const Server* server) {
+Client::Client(boost::asio::io_service* ios) {
   // Set logging to be pretty verbose (everything except message payloads)
   c_.clear_access_channels(websocketpp::log::alevel::frame_header);
   c_.clear_access_channels(websocketpp::log::alevel::frame_payload);
 
   // Initialize ASIO
-  c_.init_asio();
+  c_.init_asio(ios);
 
   // Register our message handler
   c_.set_open_handler(bind(&Client::onOpen, this, ::_1));
@@ -85,7 +85,7 @@ WebsocketContextPtr Client::onTlsInit(WebsocketHandle hdl) {
   return ctx;
 }
 
-bool Client::start(const std::string& uri, WebsocketErrorCode* eOut) noexcept {
+bool Client::setUp(const std::string& uri, WebsocketErrorCode* eOut) noexcept {
   WebsocketErrorCode ec;
   try {
     WebsocketClient::connection_ptr con = c_.get_connection(uri, ec);
@@ -97,13 +97,8 @@ bool Client::start(const std::string& uri, WebsocketErrorCode* eOut) noexcept {
     }
 
     // Note that connect here only requests a connection. No network messages are
-    // exchanged until the event loop starts running in the next line.
+    // exchanged until the event loop starts running.
     c_.connect(con);
-
-    // Start the ASIO io_service run loop
-    // this will cause a single connection to be made to the server. c.run()
-    // will exit when this connection is closed.
-    c_.run();
   } catch (const websocketpp::exception& e) {
     std::cout << e.what() << std::endl;
     if (eOut) *eOut = ec;

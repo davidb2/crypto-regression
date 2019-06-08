@@ -1,3 +1,6 @@
+#ifndef BACKEND_SERVER_H_
+#define BACKEND_SERVER_H_
+
 #include <string>
 #include <vector>
 
@@ -15,8 +18,8 @@ typedef WebsocketServer::message_ptr WebsocketMessagePtr;
 // Dashboard Server.
 class Server {
  public:
-  Server();
-  bool start(const unsigned port, WebsocketErrorCode* ec) noexcept;
+  Server(boost::asio::io_service* ios);
+  bool setUp(const unsigned port, WebsocketErrorCode* ec) noexcept;
 
  private:
   void onOpen(WebsocketHandle handle);
@@ -30,3 +33,5 @@ class Server {
 };
 
 } // namespace gdax
+
+#endif // BACKEND_SERVER_H_

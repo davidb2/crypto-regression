@@ -1,3 +1,6 @@
+#ifndef BACKEND_CLIENT_H_
+#define BACKEND_CLIENT_H_
+
 #include <string>
 
 #include <websocketpp/client.hpp>
@@ -13,8 +16,8 @@ typedef websocketpp::config::asio_tls_client::message_type::ptr WebsocketMessage
 // Gdax Client.
 class Client {
  public:
-  Client(const Server* server);
-  bool start(const std::string& uri, WebsocketErrorCode* ec) noexcept;
+  Client(boost::asio::io_service* ios);
+  bool setUp(const std::string& uri, WebsocketErrorCode* ec) noexcept;
 
  private:
   void onOpen(WebsocketHandle handle);
@@ -27,7 +30,8 @@ class Client {
 
  private:
   WebsocketClient c_;
-  Server* s_;
 };
 
 } // namespace gdax
+
+#endif // BACKEND_CLIENT_H_
