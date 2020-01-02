@@ -1,3 +1,6 @@
+#include <iostream>
+#include <string>
+
 #include "manager.h"
 
 namespace gdax {
@@ -17,6 +20,7 @@ bool Manager::setUp(WebsocketErrorCode* ec) noexcept {
 }
 
 void Manager::start() {
+  std::cout << "Listening on port " << serverPort_ << "." << std::endl;
   ios_.run();
 }
 
